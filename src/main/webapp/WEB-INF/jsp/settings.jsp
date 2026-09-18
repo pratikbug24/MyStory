@@ -20,7 +20,7 @@
             margin: 0 auto;
             padding: 20px;
         }
-        
+
         .settings-section {
             background: var(--card-bg);
             border-radius: 16px;
@@ -28,7 +28,7 @@
             margin-bottom: 20px;
             box-shadow: 0 4px 20px var(--shadow-light);
         }
-        
+
         .settings-section h2 {
             font-size: 1.2rem;
             color: var(--card-text);
@@ -37,7 +37,7 @@
             align-items: center;
             gap: 10px;
         }
-        
+
         .setting-item {
             display: flex;
             align-items: center;
@@ -45,34 +45,34 @@
             padding: 15px 0;
             border-bottom: 1px solid var(--input-border);
         }
-        
+
         .setting-item:last-child {
             border-bottom: none;
         }
-        
+
         .setting-info h3 {
             font-size: 1rem;
             color: var(--card-text);
             margin-bottom: 4px;
         }
-        
+
         .setting-info p {
             font-size: 0.85rem;
             color: var(--card-subtext);
         }
-        
+
         .toggle-switch {
             position: relative;
             width: 50px;
             height: 26px;
         }
-        
+
         .toggle-switch input {
             opacity: 0;
             width: 0;
             height: 0;
         }
-        
+
         .toggle-slider {
             position: absolute;
             cursor: pointer;
@@ -84,7 +84,7 @@
             transition: 0.3s;
             border-radius: 26px;
         }
-        
+
         .toggle-slider:before {
             position: absolute;
             content: "";
@@ -96,15 +96,15 @@
             transition: 0.3s;
             border-radius: 50%;
         }
-        
+
         input:checked + .toggle-slider {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         }
-        
+
         input:checked + .toggle-slider:before {
             transform: translateX(24px);
         }
-        
+
         .btn {
             padding: 12px 24px;
             background: var(--btn-primary);
@@ -118,21 +118,21 @@
             text-decoration: none;
             display: inline-block;
         }
-        
+
         .btn:hover {
             transform: scale(1.02);
             box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
         }
-        
+
         .btn-danger {
             background: #dc3545;
         }
-        
+
         .btn-danger:hover {
             background: #c82333;
             box-shadow: 0 4px 12px rgba(220, 53, 69, 0.4);
         }
-        
+
         .top-bar {
             display: flex;
             justify-content: space-between;
@@ -142,7 +142,7 @@
             border-radius: 12px;
             margin-bottom: 30px;
         }
-        
+
         .logo {
             display: flex;
             align-items: center;
@@ -151,16 +151,16 @@
             font-size: 1.3rem;
             font-weight: 700;
         }
-        
+
         .logo-icon {
             font-size: 1.5rem;
         }
-        
+
         .top-links {
             display: flex;
             gap: 15px;
         }
-        
+
         .top-link {
             color: white;
             text-decoration: none;
@@ -169,11 +169,11 @@
             background: rgba(255,255,255,0.2);
             transition: background 0.2s;
         }
-        
+
         .top-link:hover {
             background: rgba(255,255,255,0.3);
         }
-        
+
         .success-msg {
             background: #e6f4ea;
             color: #1e8e3e;
@@ -181,7 +181,7 @@
             border-radius: 8px;
             margin-bottom: 20px;
         }
-        
+
         @media (max-width: 500px) {
             .setting-item {
                 flex-direction: column;
@@ -202,22 +202,22 @@
                 <span class="logo-text">Journal App</span>
             </div>
             <div class="top-links">
-                <a href="/home" class="top-link"><i class="fas fa-home"></i> Home</a>
+                <a href="/dashboard" class="top-link"><i class="fas fa-home"></i> Dashboard</a>
                 <a href="/profile" class="top-link"><i class="fas fa-user"></i> Profile</a>
                 <a href="/logout" class="top-link"><i class="fas fa-sign-out-alt"></i> Logout</a>
             </div>
         </div>
-        
+
         <div class="settings-container">
-            
+
             <% if (request.getAttribute("success") != null) { %>
                 <div class="success-msg"><%= request.getAttribute("success") %></div>
             <% } %>
-            
+
             <!-- Theme Settings -->
             <div class="settings-section">
                 <h2><i class="fas fa-palette"></i> Appearance</h2>
-                
+
                 <div class="setting-item">
                     <div class="setting-info">
                         <h3>Dark Mode</h3>
@@ -231,11 +231,11 @@
                     </form>
                 </div>
             </div>
-            
+
             <!-- Quick Links -->
             <div class="settings-section">
                 <h2><i class="fas fa-link"></i> Quick Links</h2>
-                
+
                 <div class="setting-item">
                     <div class="setting-info">
                         <h3>My Profile</h3>
@@ -245,22 +245,22 @@
                         <i class="fas fa-user"></i> View
                     </a>
                 </div>
-                
+
                 <div class="setting-item">
                     <div class="setting-info">
                         <h3>Journal Dashboard</h3>
                         <p>Go to your journal entries</p>
                     </div>
-                    <a href="/home" class="btn">
+                    <a href="/dashboard" class="btn">
                         <i class="fas fa-book"></i> View
                     </a>
                 </div>
             </div>
-            
+
             <!-- Account -->
             <div class="settings-section">
                 <h2><i class="fas fa-user-cog"></i> Account</h2>
-                
+
                 <div class="setting-item">
                     <div class="setting-info">
                         <h3>Delete Account</h3>
@@ -273,11 +273,11 @@
                     </form>
                 </div>
             </div>
-            
+
             <!-- About -->
             <div class="settings-section">
                 <h2><i class="fas fa-info-circle"></i> About</h2>
-                
+
                 <div class="setting-item">
                     <div class="setting-info">
                         <h3>Journal App</h3>
@@ -285,7 +285,7 @@
                     </div>
                 </div>
             </div>
-            
+
         </div>
     </div>
 

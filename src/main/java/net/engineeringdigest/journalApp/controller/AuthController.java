@@ -14,13 +14,20 @@ public class AuthController {
     @Autowired
     private UserService userService;
 
-    // 👉 LOGIN PAGE
+    // 👉 HOME PAGE / LANDING
     @GetMapping("/")
+    public String landingPage(HttpSession session) {
+        // The landing page itself decides to show "Go to dashboard" when logged in
+        return "home";
+    }
+
+    // 👉 LOGIN PAGE
+    @GetMapping("/login")
     public String loginPage(HttpSession session) {
 
-        // ✅ If already logged in → go to home
+        // ✅ If already logged in → go to dashboard
         if (session.getAttribute("user") != null) {
-            return "redirect:/home";
+            return "redirect:/dashboard";
         }
 
         return "login";
@@ -41,7 +48,7 @@ public class AuthController {
 
         userService.register(user);
 
-        return "redirect:/";
+        return "redirect:/login";
     }
 
     // 👉 LOGIN
@@ -54,7 +61,7 @@ public class AuthController {
 
         if (user != null) {
             session.setAttribute("user", user);  // ✅ save session
-            return "redirect:/home";
+            return "redirect:/dashboard";
         } else {
             return "login";
         }

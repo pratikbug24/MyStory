@@ -21,19 +21,30 @@ public class PageController {
     @Autowired
     private UserService userService;
 
-    @GetMapping("/home")
-    public String home(HttpSession session, Model model) {
+    @GetMapping("/dashboard")
+    public String dashboard(HttpSession session, Model model) {
 
         // ❌ Not logged in
         if (session.getAttribute("user") == null) {
-            return "redirect:/";
+            return "redirect:/login";
         }
 
         User user = (User) session.getAttribute("user");
         List<JournalEntry> entries = journalEntryService.getJournalEntriesByUser(user.getId());
         model.addAttribute("entries", entries);
 
-        return "index";   // index.jsp
+        return "dashboard";   // dashboard.jsp
+    }
+
+    // Kept so old bookmarks and links keep working
+    @GetMapping("/home")
+    public String home(HttpSession session) {
+
+        if (session.getAttribute("user") == null) {
+            return "redirect:/login";
+        }
+
+        return "redirect:/dashboard";
     }
 
     // Create new journal entry (JSP form)
@@ -44,7 +55,7 @@ public class PageController {
                               Model model) {
         User user = (User) session.getAttribute("user");
         if (user == null) {
-            return "redirect:/";
+            return "redirect:/login";
         }
 
         JournalEntry entry = new JournalEntry();
@@ -54,7 +65,7 @@ public class PageController {
 
         journalEntryService.saveEntry(entry);
 
-        return "redirect:/home";
+        return "redirect:/dashboard";
     }
 
     // Delete journal entry (JSP form)
@@ -62,7 +73,7 @@ public class PageController {
     public String deleteEntry(@PathVariable Long id, HttpSession session) {
         User user = (User) session.getAttribute("user");
         if (user == null) {
-            return "redirect:/";
+            return "redirect:/login";
         }
 
         JournalEntry entry = journalEntryService.getById(id);
@@ -71,13 +82,13 @@ public class PageController {
             journalEntryService.delete(id);
         }
 
-        return "redirect:/home";
+        return "redirect:/dashboard";
     }
 
     @GetMapping("/profile")
     public String profile(HttpSession session) {
         if (session.getAttribute("user") == null) {
-            return "redirect:/";
+            return "redirect:/login";
         }
         return "profile";
     }
@@ -90,7 +101,7 @@ public class PageController {
                                 Model model) {
         User user = (User) session.getAttribute("user");
         if (user == null) {
-            return "redirect:/";
+            return "redirect:/login";
         }
 
         try {
@@ -116,7 +127,7 @@ public class PageController {
                                  Model model) {
         User user = (User) session.getAttribute("user");
         if (user == null) {
-            return "redirect:/";
+            return "redirect:/login";
         }
 
         if (!newPassword.equals(confirmPassword)) {
@@ -144,7 +155,7 @@ public class PageController {
     @GetMapping("/settings")
     public String settings(HttpSession session) {
         if (session.getAttribute("user") == null) {
-            return "redirect:/";
+            return "redirect:/login";
         }
         return "settings";
     }
@@ -155,7 +166,7 @@ public class PageController {
                               Model model) {
         User user = (User) session.getAttribute("user");
         if (user == null) {
-            return "redirect:/";
+            return "redirect:/login";
         }
 
         try {
@@ -174,7 +185,7 @@ public class PageController {
     public String deleteAccount(HttpSession session) {
         User user = (User) session.getAttribute("user");
         if (user == null) {
-            return "redirect:/";
+            return "redirect:/login";
         }
 
         try {

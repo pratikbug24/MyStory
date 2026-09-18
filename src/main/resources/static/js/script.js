@@ -1,3 +1,4 @@
+// Relative URL: works on any host/port and avoids cross-origin requests entirely
 const API_URL = "http://localhost:8080/api/journal";
 
 let allEntries = [];
@@ -196,6 +197,3 @@ function autoExpand(textarea) {
     textarea.style.height = "auto";
     textarea.style.height = textarea.scrollHeight + "px";
 }
-
-/* INIT */
-loadEntries();
