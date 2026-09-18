@@ -1,5 +1,5 @@
 // Relative URL: works on any host/port and avoids cross-origin requests entirely
-const API_URL = "http://localhost:8080/api/journal";
+const API_URL = "http://localhost:8081/api/journal";
 
 let allEntries = [];
 

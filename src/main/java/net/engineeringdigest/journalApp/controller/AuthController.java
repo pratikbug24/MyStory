@@ -4,6 +4,7 @@ import net.engineeringdigest.journalApp.entity.User;
 import net.engineeringdigest.journalApp.Service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
@@ -40,7 +41,13 @@ public class AuthController {
 
     @PostMapping("/register")
     public String register(@RequestParam String username,
-                           @RequestParam String password) {
+                           @RequestParam String password,
+                           Model model) {
+
+        if (userService.findByUsername(username) != null) {
+            model.addAttribute("error", "Username already exists");
+            return "register";
+        }
 
         User user = new User();
         user.setUsername(username);

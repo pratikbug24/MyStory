@@ -1,0 +1,402 @@
+/* ============================================================
+   Daybook — authentication pages (login / register)
+   Paper & ink theme shared with the landing page.
+   Loaded ONLY by login.jsp and register.jsp.
+   Self-contained: does not depend on style.css.
+   ============================================================ */
+
+*,
+*::before,
+*::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    -webkit-text-size-adjust: 100%;
+}
+
+body.auth {
+    --ink: #1c1917;
+    --ink-soft: #57534e;
+    --ink-faint: #a8a29e;
+    --paper: #faf6ef;
+    --paper-2: #f3ece0;
+    --paper-edge: #e6dccb;
+    --seal: #9b2c2c;
+    --seal-soft: #c05621;
+    --field: #fffdf9;
+
+    min-height: 100vh;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'Karla', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+}
+
+:focus-visible {
+    outline: 2px solid var(--seal);
+    outline-offset: 2px;
+    border-radius: 4px;
+}
+
+/* ---------- Layout ---------- */
+
+.auth-shell {
+    display: grid;
+    grid-template-columns: 1.05fr 1fr;
+    min-height: 100vh;
+}
+
+/* ---------- Ink panel ---------- */
+
+.auth-aside {
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    background: var(--ink);
+    color: var(--paper);
+    padding: 3rem 3.25rem 3.5rem;
+}
+
+.auth-aside::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.55;
+    background-image:
+        radial-gradient(circle at 18% 20%, rgba(155, 44, 44, 0.30) 0, transparent 46%),
+        radial-gradient(circle at 84% 80%, rgba(192, 86, 33, 0.24) 0, transparent 52%),
+        repeating-linear-gradient(0deg, rgba(250, 246, 239, 0.05) 0 1px, transparent 1px 3px);
+}
+
+.auth-aside > * {
+    position: relative;
+    z-index: 1;
+}
+
+.auth-brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.7rem;
+    align-self: flex-start;
+    color: var(--paper);
+    text-decoration: none;
+}
+
+.auth-brand-logo {
+    display: block;
+    width: 44px;
+    height: 44px;
+    flex-shrink: 0;
+}
+
+.auth-brand-name {
+    font-family: 'Fraunces', Georgia, 'Times New Roman', serif;
+    font-size: 1.35rem;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+}
+
+.auth-aside-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 2rem;
+    padding: 2.5rem 0;
+}
+
+/* Decorative diary sheet */
+.auth-sheet {
+    width: 100%;
+    max-width: 292px;
+    padding: 1.5rem 1.6rem 1.7rem;
+    border-radius: 4px 18px 4px 18px;
+    background: var(--paper);
+    color: var(--ink);
+    transform: rotate(-2.2deg);
+    box-shadow: 0 26px 54px rgba(0, 0, 0, 0.45);
+}
+
+.auth-sheet-date {
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin-bottom: 0.7rem;
+}
+
+.auth-hand {
+    font-family: 'Caveat', 'Segoe Script', 'Bradley Hand', cursive;
+    font-size: 1.65rem;
+    line-height: 1.1;
+    margin-bottom: 1rem;
+}
+
+.auth-sheet-lines {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+}
+
+.auth-sheet-lines span {
+    display: block;
+    height: 1px;
+    background: var(--paper-edge);
+}
+
+.auth-sheet-lines span:last-child {
+    width: 62%;
+}
+
+.auth-quote {
+    max-width: 27ch;
+    font-family: 'Fraunces', Georgia, 'Times New Roman', serif;
+    font-size: 1.12rem;
+    line-height: 1.5;
+    color: rgba(250, 246, 239, 0.92);
+}
+
+.auth-points {
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+    list-style: none;
+}
+
+.auth-points li {
+    display: flex;
+    gap: 0.6rem;
+    align-items: baseline;
+    font-size: 0.88rem;
+    line-height: 1.45;
+    color: rgba(250, 246, 239, 0.7);
+}
+
+.auth-points li::before {
+    content: "—";
+    color: var(--seal-soft);
+    flex-shrink: 0;
+}
+
+/* ---------- Form panel ---------- */
+
+.auth-main {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem 1.5rem;
+    background: var(--paper);
+}
+
+.auth-card {
+    width: 100%;
+    max-width: 420px;
+}
+
+.auth-eyebrow {
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--seal);
+    margin-bottom: 0.85rem;
+}
+
+.auth-title {
+    font-family: 'Fraunces', Georgia, 'Times New Roman', serif;
+    font-size: clamp(1.9rem, 4vw, 2.45rem);
+    font-weight: 600;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    margin-bottom: 0.6rem;
+}
+
+.auth-lede {
+    font-size: 0.98rem;
+    line-height: 1.55;
+    color: var(--ink-soft);
+    margin-bottom: 2rem;
+}
+
+.auth-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.15rem;
+}
+
+.auth-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+}
+
+.auth-field label {
+    font-size: 0.76rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+}
+
+.auth-field input {
+    width: 100%;
+    padding: 0.85rem 1rem;
+    font-family: inherit;
+    font-size: 0.97rem;
+    color: var(--ink);
+    background: var(--field);
+    border: 1px solid var(--paper-edge);
+    border-radius: 12px;
+    transition: border-color 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+}
+
+.auth-field input::placeholder {
+    color: var(--ink-faint);
+}
+
+.auth-field input:hover {
+    border-color: #d6c9b4;
+}
+
+.auth-field input:focus {
+    outline: none;
+    border-color: var(--seal);
+    background: #ffffff;
+    box-shadow: 0 0 0 3px rgba(155, 44, 44, 0.14);
+}
+
+.auth-hint {
+    font-size: 0.78rem;
+    color: var(--ink-faint);
+}
+
+.auth-submit {
+    margin-top: 0.4rem;
+    width: 100%;
+    padding: 0.95rem 1rem;
+    font-family: inherit;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--paper);
+    background: var(--ink);
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+}
+
+.auth-submit:hover {
+    background: #292524;
+    transform: translateY(-1px);
+    box-shadow: 0 10px 22px rgba(28, 25, 23, 0.26);
+}
+
+.auth-submit:active {
+    transform: translateY(0);
+}
+
+/* ---------- Messages ---------- */
+
+.auth-alert {
+    padding: 0.85rem 1rem;
+    margin-bottom: 1.5rem;
+    font-size: 0.9rem;
+    line-height: 1.45;
+    border: 1px solid rgba(155, 44, 44, 0.28);
+    border-radius: 12px;
+    background: rgba(155, 44, 44, 0.07);
+    color: #7f1d1d;
+}
+
+.auth-alert-ok {
+    border-color: rgba(21, 128, 61, 0.3);
+    background: rgba(21, 128, 61, 0.08);
+    color: #14532d;
+}
+
+/* ---------- Footer links ---------- */
+
+.auth-switch {
+    margin-top: 1.9rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--paper-edge);
+    font-size: 0.95rem;
+    color: var(--ink-soft);
+}
+
+.auth-switch a {
+    color: var(--seal);
+    font-weight: 600;
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+}
+
+.auth-switch a:hover {
+    border-bottom-color: var(--seal);
+}
+
+.auth-back {
+    margin-top: 0.9rem;
+    font-size: 0.88rem;
+}
+
+.auth-back a {
+    color: var(--ink-faint);
+    text-decoration: none;
+}
+
+.auth-back a:hover {
+    color: var(--ink-soft);
+}
+
+/* ---------- Responsive ---------- */
+
+@media (max-width: 940px) {
+    .auth-shell {
+        grid-template-columns: 1fr;
+    }
+
+    .auth-aside {
+        padding: 1.6rem 1.5rem;
+    }
+
+    /* Keep only the wordmark on small screens */
+    .auth-aside-body,
+    .auth-points {
+        display: none;
+    }
+
+    .auth-main {
+        align-items: flex-start;
+        padding: 2.25rem 1.5rem 3.5rem;
+    }
+}
+
+@media (max-width: 520px) {
+    .auth-aside {
+        padding: 1.35rem 1.25rem;
+    }
+
+    .auth-title {
+        font-size: 1.85rem;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        transition: none !important;
+        animation: none !important;
+    }
+
+    .auth-sheet {
+        transform: none;
+    }
+}
