@@ -16,7 +16,7 @@
 <header class="db-top">
     <a class="db-brand" href="/">
         <img class="db-brand-logo" src="/images/logo.png" alt="" width="38" height="38">
-        <span class="db-brand-name">Daybook</span>
+        <span class="db-brand-name">MyStory</span>
     </a>
 
     <div class="db-top-actions">

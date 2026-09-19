@@ -4,7 +4,6 @@ package net.engineeringdigest.journalApp.entity;
 
 
 import javax.persistence.*;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.List;
 
 @Entity
@@ -15,9 +14,6 @@ public class User {
     private Long id;
 
     private String username;
-
-    // Never serialize credentials to JSON responses
-    @JsonIgnore
     private String password;
 
     // Profile fields
@@ -31,7 +27,6 @@ public class User {
     private String language = "en";
 
     @OneToMany
-    @JsonIgnore
     private List<JournalEntry> journalEntries;
 
     public User() {}

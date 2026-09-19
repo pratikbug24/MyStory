@@ -162,6 +162,7 @@ public class PageController {
 
     @PostMapping("/settings/theme")
     public String toggleTheme(@RequestParam(required = false) Boolean darkTheme,
+                              @RequestParam(required = false, defaultValue = "/settings") String redirectTo,
                               HttpSession session,
                               Model model) {
         User user = (User) session.getAttribute("user");
@@ -178,7 +179,11 @@ public class PageController {
             model.addAttribute("error", "Failed to update theme");
         }
 
-        return "redirect:/settings";
+        // Only ever bounce back to a path on this site
+        if (!redirectTo.startsWith("/") || redirectTo.startsWith("//")) {
+            redirectTo = "/settings";
+        }
+        return "redirect:" + redirectTo;
     }
 
     @PostMapping("/settings/delete")
