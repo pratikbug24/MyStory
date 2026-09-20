@@ -32,3 +32,8 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### App runtime data ###
+# SQLite database and user-uploaded photos are local state, not source.
+journal.db
+uploads/

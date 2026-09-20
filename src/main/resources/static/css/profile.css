@@ -245,6 +245,7 @@ body.dark-theme .pf-theme-toggle .sun-icon {
     width: 92px;
     height: 92px;
     flex-shrink: 0;
+    overflow: hidden;
     font-family: 'Fraunces', Georgia, 'Times New Roman', serif;
     font-size: 2.4rem;
     font-weight: 600;
@@ -252,6 +253,66 @@ body.dark-theme .pf-theme-toggle .sun-icon {
     background: var(--ink);
     border-radius: 50%;
     box-shadow: inset 0 0 0 3px var(--field), 0 0 0 1px var(--paper-edge);
+}
+
+.pf-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+/* ---------- Profile photo card ---------- */
+.pf-photo-row {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    margin-top: 1.25rem;
+}
+
+.pf-photo-preview {
+    display: grid;
+    place-items: center;
+    width: 76px;
+    height: 76px;
+    flex-shrink: 0;
+    overflow: hidden;
+    font-family: 'Fraunces', Georgia, 'Times New Roman', serif;
+    font-size: 1.9rem;
+    font-weight: 600;
+    color: var(--paper);
+    background: var(--ink);
+    border-radius: 50%;
+    box-shadow: inset 0 0 0 3px var(--field), 0 0 0 1px var(--paper-edge);
+}
+
+.pf-photo-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+.pf-photo-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    align-items: flex-start;
+}
+
+.pf-photo-actions form {
+    margin: 0;
+}
+
+/* The real input is hidden; this label is the button, so it needs the
+   same cursor and focus affordance a button would have. */
+.pf-photo-form label.pf-btn {
+    cursor: pointer;
+}
+
+.pf-photo-form input[type="file"]:focus-visible + label.pf-btn {
+    outline: 2px solid var(--ink);
+    outline-offset: 2px;
 }
 
 .pf-hero-body {
@@ -479,6 +540,17 @@ body.dark-theme .pf-theme-toggle .sun-icon {
     transform: translateY(-1px);
 }
 
+.pf-btn-ghost {
+    color: var(--ink);
+    background: transparent;
+    border-color: var(--paper-edge);
+}
+
+.pf-btn-ghost:hover {
+    background: var(--field);
+    border-color: var(--ink);
+}
+
 /* ---------- Responsive ---------- */
 
 @media (max-width: 720px) {
@@ -562,7 +634,8 @@ body.dark-theme .pf-stat-value {
     color: var(--ink);
 }
 
-body.dark-theme .pf-avatar {
+body.dark-theme .pf-avatar,
+body.dark-theme .pf-photo-preview {
     color: var(--ink);
     background: var(--paper-2);
     box-shadow: inset 0 0 0 3px var(--field), 0 0 0 1px var(--paper-edge);

@@ -74,7 +74,15 @@
     </c:if>
 
     <section class="pf-hero">
-        <div class="pf-avatar" aria-hidden="true"><c:out value="${fn:substring(sessionScope.user.username, 0, 1)}"/></div>
+        <div class="pf-avatar" aria-hidden="true">
+            <c:choose>
+                <c:when test="${not empty sessionScope.user.profileImage}">
+                    <img src="/uploads/<c:out value='${sessionScope.user.profileImage}'/>"
+                         alt="" width="92" height="92">
+                </c:when>
+                <c:otherwise><c:out value="${fn:substring(sessionScope.user.username, 0, 1)}"/></c:otherwise>
+            </c:choose>
+        </div>
 
         <div class="pf-hero-body">
             <h2 class="pf-hero-name">
@@ -128,6 +136,51 @@
     </section>
 
     <div class="pf-grid">
+
+        <section class="pf-card">
+            <div class="pf-card-head">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M9 2 7.17 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2h-3.17L15 2H9zm3 15c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5z"/>
+                </svg>
+                <h2>Profile photo</h2>
+            </div>
+            <p class="pf-card-note">PNG, JPG or GIF, up to 5 MB. Large images are resized automatically.</p>
+
+            <div class="pf-photo-row">
+                <div class="pf-photo-preview" aria-hidden="true">
+                    <c:choose>
+                        <c:when test="${not empty sessionScope.user.profileImage}">
+                            <img id="photoPreview"
+                                 src="/uploads/<c:out value='${sessionScope.user.profileImage}'/>" alt="">
+                        </c:when>
+                        <c:otherwise>
+                            <img id="photoPreview" src="" alt="" hidden>
+                            <span id="photoPreviewInitial"><c:out value="${fn:substring(sessionScope.user.username, 0, 1)}"/></span>
+                        </c:otherwise>
+                    </c:choose>
+                </div>
+
+                <div class="pf-photo-actions">
+                    <form action="/profile/photo" method="post" enctype="multipart/form-data" class="pf-photo-form">
+                        <input type="file" id="photoFile" name="file" accept="image/*" hidden
+                               onchange="this.form.submit()">
+                        <label for="photoFile" class="pf-btn pf-btn-primary">
+                            <c:choose>
+                                <c:when test="${not empty sessionScope.user.profileImage}">Replace photo</c:when>
+                                <c:otherwise>Upload photo</c:otherwise>
+                            </c:choose>
+                        </label>
+                    </form>
+
+                    <c:if test="${not empty sessionScope.user.profileImage}">
+                        <form action="/profile/photo/delete" method="post"
+                              onsubmit="return confirm('Remove your profile photo?');">
+                            <button type="submit" class="pf-btn pf-btn-ghost">Remove</button>
+                        </form>
+                    </c:if>
+                </div>
+            </div>
+        </section>
 
         <section class="pf-card">
             <div class="pf-card-head">

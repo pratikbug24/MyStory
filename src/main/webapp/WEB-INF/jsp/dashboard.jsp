@@ -1,5 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -21,7 +22,14 @@
 
     <div class="db-top-actions">
         <div class="db-who">
-            <span class="db-avatar" id="userInitial" aria-hidden="true"></span>
+            <span class="db-avatar" id="userInitial" aria-hidden="true">
+                <c:choose>
+                    <c:when test="${not empty sessionScope.user.profileImage}">
+                        <img src="/uploads/<c:out value='${sessionScope.user.profileImage}'/>" alt="">
+                    </c:when>
+                    <c:otherwise><c:out value="${fn:substring(sessionScope.user.username, 0, 1)}"/></c:otherwise>
+                </c:choose>
+            </span>
             <span id="usernameDisplay">${sessionScope.user.username}</span>
         </div>
 

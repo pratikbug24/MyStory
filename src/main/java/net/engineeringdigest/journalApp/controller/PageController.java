@@ -2,12 +2,19 @@ package net.engineeringdigest.journalApp.controller;
 
 import net.engineeringdigest.journalApp.entity.JournalEntry;
 import net.engineeringdigest.journalApp.entity.User;
+import net.engineeringdigest.journalApp.security.AuthConstants;
 import net.engineeringdigest.journalApp.Service.JournalEntryService;
+import net.engineeringdigest.journalApp.Service.ProfileImageService;
 import net.engineeringdigest.journalApp.Service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.multipart.support.MissingServletRequestPartException;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
+import org.springframework.web.multipart.MultipartException;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpSession;
 import java.util.List;
@@ -21,15 +28,18 @@ public class PageController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private ProfileImageService profileImageService;
+
     @GetMapping("/dashboard")
     public String dashboard(HttpSession session, Model model) {
 
         // ❌ Not logged in
-        if (session.getAttribute("user") == null) {
+        if (session.getAttribute(AuthConstants.SESSION_USER) == null) {
             return "redirect:/login";
         }
 
-        User user = (User) session.getAttribute("user");
+        User user = (User) session.getAttribute(AuthConstants.SESSION_USER);
         List<JournalEntry> entries = journalEntryService.getJournalEntriesByUser(user.getId());
         model.addAttribute("entries", entries);
 
@@ -40,7 +50,7 @@ public class PageController {
     @GetMapping("/home")
     public String home(HttpSession session) {
 
-        if (session.getAttribute("user") == null) {
+        if (session.getAttribute(AuthConstants.SESSION_USER) == null) {
             return "redirect:/login";
         }
 
@@ -53,7 +63,7 @@ public class PageController {
                               @RequestParam String content,
                               HttpSession session,
                               Model model) {
-        User user = (User) session.getAttribute("user");
+        User user = (User) session.getAttribute(AuthConstants.SESSION_USER);
         if (user == null) {
             return "redirect:/login";
         }
@@ -71,7 +81,7 @@ public class PageController {
     // Delete journal entry (JSP form)
     @PostMapping("/journal/delete/{id}")
     public String deleteEntry(@PathVariable Long id, HttpSession session) {
-        User user = (User) session.getAttribute("user");
+        User user = (User) session.getAttribute(AuthConstants.SESSION_USER);
         if (user == null) {
             return "redirect:/login";
         }
@@ -87,10 +97,71 @@ public class PageController {
 
     @GetMapping("/profile")
     public String profile(HttpSession session) {
-        if (session.getAttribute("user") == null) {
+        if (session.getAttribute(AuthConstants.SESSION_USER) == null) {
             return "redirect:/login";
         }
         return "profile";
+    }
+
+    // 👉 PROFILE PHOTO (JSP form)
+    @PostMapping("/profile/photo")
+    public String uploadProfilePhoto(@RequestParam("file") MultipartFile file,
+                                     HttpSession session,
+                                     RedirectAttributes redirectAttributes) {
+        User user = (User) session.getAttribute(AuthConstants.SESSION_USER);
+        if (user == null) {
+            return "redirect:/login";
+        }
+
+        try {
+            User freshUser = userService.findById(user.getId());
+            profileImageService.store(freshUser, file);
+            userService.updateUser(freshUser);
+            session.setAttribute(AuthConstants.SESSION_USER, freshUser);
+            redirectAttributes.addFlashAttribute("success", "Profile photo updated!");
+        } catch (IllegalArgumentException e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Failed to save the photo.");
+        }
+
+        // Redirect rather than forward so a refresh does not re-upload the file
+        return "redirect:/profile";
+    }
+
+    /**
+     * The multipart resolver rejects an oversized upload or a request with no file
+     * part before the handler runs, so those never reach the try/catch above. Send
+     * the user back to the page with a message instead of an error page.
+     */
+    @ExceptionHandler({MaxUploadSizeExceededException.class, MultipartException.class,
+            MissingServletRequestPartException.class})
+    public String handleBadUpload(RedirectAttributes redirectAttributes) {
+        redirectAttributes.addFlashAttribute("error",
+                "That upload could not be accepted. Use an image under 5 MB.");
+        return "redirect:/profile";
+    }
+
+    @PostMapping("/profile/photo/delete")
+    public String deleteProfilePhoto(HttpSession session,
+                                     RedirectAttributes redirectAttributes) {
+        User user = (User) session.getAttribute(AuthConstants.SESSION_USER);
+        if (user == null) {
+            return "redirect:/login";
+        }
+
+        try {
+            User freshUser = userService.findById(user.getId());
+            boolean removed = profileImageService.remove(freshUser);
+            userService.updateUser(freshUser);
+            session.setAttribute(AuthConstants.SESSION_USER, freshUser);
+            redirectAttributes.addFlashAttribute("success",
+                    removed ? "Profile photo removed!" : "There was no photo to remove.");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Failed to remove the photo.");
+        }
+
+        return "redirect:/profile";
     }
 
     @PostMapping("/profile/update")
@@ -99,7 +170,7 @@ public class PageController {
                                 @RequestParam String bio,
                                 HttpSession session,
                                 Model model) {
-        User user = (User) session.getAttribute("user");
+        User user = (User) session.getAttribute(AuthConstants.SESSION_USER);
         if (user == null) {
             return "redirect:/login";
         }
@@ -110,7 +181,7 @@ public class PageController {
             freshUser.setEmail(email);
             freshUser.setBio(bio);
             userService.updateUser(freshUser);
-            session.setAttribute("user", freshUser);
+            session.setAttribute(AuthConstants.SESSION_USER, freshUser);
             model.addAttribute("success", "Profile updated successfully!");
         } catch (Exception e) {
             model.addAttribute("error", "Failed to update profile: " + e.getMessage());
@@ -125,7 +196,7 @@ public class PageController {
                                  @RequestParam String confirmPassword,
                                  HttpSession session,
                                  Model model) {
-        User user = (User) session.getAttribute("user");
+        User user = (User) session.getAttribute(AuthConstants.SESSION_USER);
         if (user == null) {
             return "redirect:/login";
         }
@@ -154,7 +225,7 @@ public class PageController {
 
     @GetMapping("/settings")
     public String settings(HttpSession session) {
-        if (session.getAttribute("user") == null) {
+        if (session.getAttribute(AuthConstants.SESSION_USER) == null) {
             return "redirect:/login";
         }
         return "settings";
@@ -165,7 +236,7 @@ public class PageController {
                               @RequestParam(required = false, defaultValue = "/settings") String redirectTo,
                               HttpSession session,
                               Model model) {
-        User user = (User) session.getAttribute("user");
+        User user = (User) session.getAttribute(AuthConstants.SESSION_USER);
         if (user == null) {
             return "redirect:/login";
         }
@@ -174,7 +245,7 @@ public class PageController {
             User freshUser = userService.findById(user.getId());
             freshUser.setDarkTheme(darkTheme != null && darkTheme);
             userService.updateUser(freshUser);
-            session.setAttribute("user", freshUser);
+            session.setAttribute(AuthConstants.SESSION_USER, freshUser);
         } catch (Exception e) {
             model.addAttribute("error", "Failed to update theme");
         }
@@ -188,7 +259,7 @@ public class PageController {
 
     @PostMapping("/settings/delete")
     public String deleteAccount(HttpSession session) {
-        User user = (User) session.getAttribute("user");
+        User user = (User) session.getAttribute(AuthConstants.SESSION_USER);
         if (user == null) {
             return "redirect:/login";
         }

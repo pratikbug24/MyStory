@@ -46,8 +46,12 @@ function initGreeting() {
     document.getElementById('greeting').textContent =
         name ? `${part}, ${name}` : part;
 
-    document.getElementById('userInitial').textContent =
-        name ? name.charAt(0).toUpperCase() : '·';
+    // Only fall back to the initial when the server did not render a photo,
+    // otherwise this would replace the user's uploaded avatar.
+    const avatar = document.getElementById('userInitial');
+    if (avatar && !avatar.querySelector('img')) {
+        avatar.textContent = name ? name.charAt(0).toUpperCase() : '·';
+    }
 
     document.getElementById('todayLine').textContent =
         new Date().toLocaleDateString('en-US', {
