@@ -66,11 +66,46 @@ journalApp/
 -----------------
 📦 API Endpoints
 ```
+Auth APIs
+POST   /api/auth/register   → Create account
+POST   /api/auth/login      → Log in (sets JWT cookie)
+GET    /api/auth/check      → Check current session
+POST   /api/auth/logout     → Log out (clears JWT cookie)
+
 Journal APIs
 GET    /api/journal        → Get all entries
 POST   /api/journal        → Create entry
 DELETE /api/journal/{id}   → Delete entry
 ```
+-------
+🔐 Authentication (JWT)
+
+Authentication is backed by JSON Web Tokens (HS256, via [jjwt](https://github.com/jwtk/jjwt)).
+
+How it works:
+
+1. `POST /api/auth/login` (and the JSP `POST /login`) verifies the credentials and returns a
+   signed token in an `HttpOnly`, `SameSite=Lax` cookie.
+2. `JwtAuthFilter` reads that cookie — or an `Authorization: Bearer <token>` header — on every
+   request, verifies the signature and expiry, and loads the matching user.
+3. Tokens carry only the username (`sub`) and user id (`uid`), so nothing about the user can
+   go stale. An invalid, tampered, or expired token authenticates nobody.
+4. `POST /api/auth/logout` and `GET /logout` expire the cookie.
+
+Relevant configuration in `application.properties`:
+```
+jwt.secret=${JWT_SECRET:dev-only-secret-change-me-8f2b1c4d9e6a7b3f5c0d2e4a6b8c1d3f}
+jwt.expiration-ms=86400000
+jwt.cookie-name=journal_jwt
+jwt.cookie-secure=false
+```
+
+> ⚠️ **Set `JWT_SECRET` in production.** The bundled default is a development placeholder —
+> anyone who knows it can mint valid tokens. Also set `jwt.cookie-secure=true` when serving
+> over HTTPS so the cookie is only sent on encrypted connections.
+
+The standalone pages in `frantend/` run on a different origin and authenticate with
+credentials, so `WebConfig` enables credentialed CORS for the local dev origins.
 -------
 ⚙️ Setup Instructions
 

@@ -1,12 +1,16 @@
 package net.engineeringdigest.journalApp.controller;
 
 import net.engineeringdigest.journalApp.entity.User;
+import net.engineeringdigest.journalApp.security.AuthConstants;
+import net.engineeringdigest.journalApp.security.JwtService;
 import net.engineeringdigest.journalApp.Service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 @Controller
@@ -14,6 +18,9 @@ public class AuthController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private JwtService jwtService;
 
     // 👉 HOME PAGE / LANDING
     @GetMapping("/")
@@ -27,7 +34,7 @@ public class AuthController {
     public String loginPage(HttpSession session) {
 
         // ✅ If already logged in → go to dashboard
-        if (session.getAttribute("user") != null) {
+        if (session.getAttribute(AuthConstants.SESSION_USER) != null) {
             return "redirect:/dashboard";
         }
 
@@ -62,12 +69,15 @@ public class AuthController {
     @PostMapping("/login")
     public String login(@RequestParam String username,
                         @RequestParam String password,
-                        HttpSession session) {
+                        HttpSession session,
+                        HttpServletResponse response) {
 
         User user = userService.login(username, password);
 
         if (user != null) {
-            session.setAttribute("user", user);  // ✅ save session
+            session.setAttribute(AuthConstants.SESSION_USER, user);  // ✅ save session
+            response.addHeader(HttpHeaders.SET_COOKIE,
+                    jwtService.createCookie(jwtService.generateToken(user)).toString());
             return "redirect:/dashboard";
         } else {
             return "login";
@@ -76,9 +86,10 @@ public class AuthController {
 
     // 👉 LOGOUT
     @GetMapping("/logout")
-    public String logout(HttpSession session) {
+    public String logout(HttpSession session, HttpServletResponse response) {
 
         session.invalidate();   // ✅ destroy session
+        response.addHeader(HttpHeaders.SET_COOKIE, jwtService.clearCookie().toString());
 
         return "redirect:/";
     }

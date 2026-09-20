@@ -1,8 +1,11 @@
 package net.engineeringdigest.journalApp.controller;
 
 import net.engineeringdigest.journalApp.entity.User;
+import net.engineeringdigest.journalApp.security.AuthConstants;
+import net.engineeringdigest.journalApp.security.JwtService;
 import net.engineeringdigest.journalApp.Service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,6 +21,9 @@ public class AuthApiController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private JwtService jwtService;
+
     // POST /api/auth/login
     @PostMapping("/login")
     public ResponseEntity<Map<String, Object>> login(@RequestBody Map<String, String> credentials, HttpSession session) {
@@ -29,11 +35,17 @@ public class AuthApiController {
         Map<String, Object> response = new HashMap<>();
 
         if (user != null) {
-            session.setAttribute("user", user);
+            session.setAttribute(AuthConstants.SESSION_USER, user);
             response.put("success", true);
             response.put("message", "Login successful");
             response.put("username", user.getUsername());
-            return ResponseEntity.ok(response);
+
+            // The JWT replaces the server-side session as the credential the
+            // browser carries; the session attribute above only serves this request.
+            String token = jwtService.generateToken(user);
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.SET_COOKIE, jwtService.createCookie(token).toString())
+                    .body(response);
         } else {
             response.put("success", false);
             response.put("message", "Invalid username or password");
@@ -81,7 +93,8 @@ public class AuthApiController {
     public ResponseEntity<Map<String, Object>> checkAuth(HttpSession session) {
         Map<String, Object> response = new HashMap<>();
 
-        User user = (User) session.getAttribute("user");
+        // Populated by JwtAuthFilter from the JWT on the request.
+        User user = (User) session.getAttribute(AuthConstants.SESSION_USER);
         if (user != null) {
             response.put("authenticated", true);
             response.put("username", user.getUsername());
@@ -99,6 +112,10 @@ public class AuthApiController {
         session.invalidate();
         response.put("success", true);
         response.put("message", "Logged out successfully");
-        return ResponseEntity.ok(response);
+
+        // Expire the JWT cookie, otherwise it would keep authenticating the browser.
+        return ResponseEntity.ok()
+                .header(HttpHeaders.SET_COOKIE, jwtService.clearCookie().toString())
+                .body(response);
     }
 }
