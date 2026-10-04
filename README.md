@@ -1,4 +1,4 @@
-📓 Journal App (Spring Boot + JSP + MySQL)
+📓 MyStory (Spring Boot + JSP + MySQL)
 
 A full-stack Journal Management Application built using Spring Boot, JSP, and MySQL.
 Users can register, log in, and manage their personal journal entries.
@@ -78,6 +78,19 @@ POST   /api/journal        → Create entry
 DELETE /api/journal/{id}   → Delete entry
 ```
 -------
+
+<p align="center">
+  <h4>Home</h4>
+  <img src="images/Home.png" />
+  <h4>Dashboard</h4>
+  <img src="images/dashboard.png" />
+   <h4>Profile</h4>
+  <img src="images/profile.png" />
+</p>
+-------
+
+
+
 🔐 Authentication (JWT)
 
 Authentication is backed by JSON Web Tokens (HS256, via [jjwt](https://github.com/jwtk/jjwt)).
