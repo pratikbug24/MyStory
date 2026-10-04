@@ -1,293 +1,202 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
-<%@ page import="net.engineeringdigest.journalApp.entity.User" %>
-<%
-    User user = (User) session.getAttribute("user");
-    if (user == null) {
-        response.sendRedirect("/");
-        return;
-    }
-    boolean isDarkTheme = user.isDarkTheme();
-%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Settings - Journal App</title>
-    <link rel="stylesheet" href="/css/style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        .settings-container {
-            max-width: 600px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-
-        .settings-section {
-            background: var(--card-bg);
-            border-radius: 16px;
-            padding: 25px;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 20px var(--shadow-light);
-        }
-
-        .settings-section h2 {
-            font-size: 1.2rem;
-            color: var(--card-text);
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .setting-item {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 15px 0;
-            border-bottom: 1px solid var(--input-border);
-        }
-
-        .setting-item:last-child {
-            border-bottom: none;
-        }
-
-        .setting-info h3 {
-            font-size: 1rem;
-            color: var(--card-text);
-            margin-bottom: 4px;
-        }
-
-        .setting-info p {
-            font-size: 0.85rem;
-            color: var(--card-subtext);
-        }
-
-        .toggle-switch {
-            position: relative;
-            width: 50px;
-            height: 26px;
-        }
-
-        .toggle-switch input {
-            opacity: 0;
-            width: 0;
-            height: 0;
-        }
-
-        .toggle-slider {
-            position: absolute;
-            cursor: pointer;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: #ccc;
-            transition: 0.3s;
-            border-radius: 26px;
-        }
-
-        .toggle-slider:before {
-            position: absolute;
-            content: "";
-            height: 20px;
-            width: 20px;
-            left: 3px;
-            bottom: 3px;
-            background-color: white;
-            transition: 0.3s;
-            border-radius: 50%;
-        }
-
-        input:checked + .toggle-slider {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        }
-
-        input:checked + .toggle-slider:before {
-            transform: translateX(24px);
-        }
-
-        .btn {
-            padding: 12px 24px;
-            background: var(--btn-primary);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
-            text-decoration: none;
-            display: inline-block;
-        }
-
-        .btn:hover {
-            transform: scale(1.02);
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
-        }
-
-        .btn-danger {
-            background: #dc3545;
-        }
-
-        .btn-danger:hover {
-            background: #c82333;
-            box-shadow: 0 4px 12px rgba(220, 53, 69, 0.4);
-        }
-
-        .top-bar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px 30px;
-            background: var(--top-bar-bg);
-            border-radius: 12px;
-            margin-bottom: 30px;
-        }
-
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            color: white;
-            font-size: 1.3rem;
-            font-weight: 700;
-        }
-
-        .logo-icon {
-            font-size: 1.5rem;
-        }
-
-        .top-links {
-            display: flex;
-            gap: 15px;
-        }
-
-        .top-link {
-            color: white;
-            text-decoration: none;
-            padding: 8px 16px;
-            border-radius: 8px;
-            background: rgba(255,255,255,0.2);
-            transition: background 0.2s;
-        }
-
-        .top-link:hover {
-            background: rgba(255,255,255,0.3);
-        }
-
-        .success-msg {
-            background: #e6f4ea;
-            color: #1e8e3e;
-            padding: 12px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-        }
-
-        @media (max-width: 500px) {
-            .setting-item {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 10px;
-            }
-            .top-bar { flex-direction: column; gap: 15px; }
-        }
-    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings · Daybook</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Karla:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/settings.css">
 </head>
-<body>
+<body class="${sessionScope.user.darkTheme ? 'dark-theme' : ''}">
 
-    <!-- Top Bar -->
-    <div class="wrapper">
-        <div class="top-bar">
-            <div class="logo">
-                <span class="logo-icon">📔</span>
-                <span class="logo-text">Journal App</span>
-            </div>
-            <div class="top-links">
-                <a href="/dashboard" class="top-link"><i class="fas fa-home"></i> Dashboard</a>
-                <a href="/profile" class="top-link"><i class="fas fa-user"></i> Profile</a>
-                <a href="/logout" class="top-link"><i class="fas fa-sign-out-alt"></i> Logout</a>
-            </div>
-        </div>
+<header class="st-top">
+    <a class="st-brand" href="/">
+        <img class="st-brand-logo" src="/images/logo.png" alt="" width="38" height="38">
+        <span class="st-brand-name">MyStory</span>
+    </a>
 
-        <div class="settings-container">
+    <div class="st-top-actions">
+        <button class="st-icon-btn st-theme-toggle" type="button" onclick="toggleTheme()"
+                title="Toggle theme" aria-label="Toggle dark theme">
+            <svg class="sun-icon" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1zm18 0h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1zM11 2v2c0 .55.45 1 1 1s1-.45 1-1V2c0-.55-.45-1-1-1s-1 .45-1 1zm0 18v2c0 .55.45 1 1 1s1-.45 1-1v-2c0-.55-.45-1-1-1s-1 .45-1 1zM5.99 4.58c-.39-.39-1.03-.39-1.41 0-.39.39-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0s.39-1.03 0-1.41L5.99 4.58zm12.37 12.37c-.39-.39-1.03-.39-1.41 0-.39.39-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0 .39-.39.39-1.03 0-1.41l-1.06-1.06zm1.06-10.96c.39-.39.39-1.03 0-1.41-.39-.39-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06zM7.05 18.36c.39-.39.39-1.03 0-1.41-.39-.39-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06z"/>
+            </svg>
+            <svg class="moon-icon" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.58 2.26-4.4 2.26-2.98 0-5.4-2.42-5.4-5.4 0-1.81.89-3.42 2.26-4.4-.44-.06-.9-.1-1.36-.1z"/>
+            </svg>
+        </button>
 
-            <% if (request.getAttribute("success") != null) { %>
-                <div class="success-msg"><%= request.getAttribute("success") %></div>
-            <% } %>
+        <a class="st-icon-btn" href="/dashboard" title="Dashboard" aria-label="Dashboard">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+            </svg>
+        </a>
 
-            <!-- Theme Settings -->
-            <div class="settings-section">
-                <h2><i class="fas fa-palette"></i> Appearance</h2>
+        <a class="st-icon-btn" href="/profile" title="Profile" aria-label="Profile">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+            </svg>
+        </a>
 
-                <div class="setting-item">
-                    <div class="setting-info">
-                        <h3>Dark Mode</h3>
-                        <p>Switch between light and dark theme</p>
-                    </div>
-                    <form action="/settings/theme" method="post" style="display: inline;">
-                        <label class="toggle-switch">
-                            <input type="checkbox" name="darkTheme" <%= isDarkTheme ? "checked" : "" %> onchange="this.form.submit()">
-                            <span class="toggle-slider"></span>
-                        </label>
-                    </form>
-                </div>
-            </div>
-
-            <!-- Quick Links -->
-            <div class="settings-section">
-                <h2><i class="fas fa-link"></i> Quick Links</h2>
-
-                <div class="setting-item">
-                    <div class="setting-info">
-                        <h3>My Profile</h3>
-                        <p>View and edit your profile</p>
-                    </div>
-                    <a href="/profile" class="btn">
-                        <i class="fas fa-user"></i> View
-                    </a>
-                </div>
-
-                <div class="setting-item">
-                    <div class="setting-info">
-                        <h3>Journal Dashboard</h3>
-                        <p>Go to your journal entries</p>
-                    </div>
-                    <a href="/dashboard" class="btn">
-                        <i class="fas fa-book"></i> View
-                    </a>
-                </div>
-            </div>
-
-            <!-- Account -->
-            <div class="settings-section">
-                <h2><i class="fas fa-user-cog"></i> Account</h2>
-
-                <div class="setting-item">
-                    <div class="setting-info">
-                        <h3>Delete Account</h3>
-                        <p>Permanently delete your account and data</p>
-                    </div>
-                    <form action="/settings/delete" method="post" onsubmit="return confirm('Are you sure you want to delete your account? This cannot be undone.');">
-                        <button type="submit" class="btn btn-danger">
-                            <i class="fas fa-trash"></i> Delete
-                        </button>
-                    </form>
-                </div>
-            </div>
-
-            <!-- About -->
-            <div class="settings-section">
-                <h2><i class="fas fa-info-circle"></i> About</h2>
-
-                <div class="setting-item">
-                    <div class="setting-info">
-                        <h3>Journal App</h3>
-                        <p>Version 1.0.0</p>
-                    </div>
-                </div>
-            </div>
-
-        </div>
+        <a class="st-logout" href="/logout">Log out</a>
     </div>
+</header>
+
+<main class="st-wrap">
+
+    <div class="st-head">
+        <p class="st-eyebrow">Your account</p>
+        <h1 class="st-title">Settings</h1>
+        <p class="st-lede">Adjust how your journal looks and behaves.</p>
+    </div>
+
+    <c:if test="${not empty success}">
+        <div class="st-alert st-alert-success" role="status">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M9 16.17 4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+            </svg>
+            <span><c:out value="${success}"/></span>
+        </div>
+    </c:if>
+
+    <c:if test="${not empty error}">
+        <div class="st-alert st-alert-error" role="alert">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+            </svg>
+            <span><c:out value="${error}"/></span>
+        </div>
+    </c:if>
+
+    <section class="st-card">
+        <div class="st-card-head">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M12 3a9 9 0 0 0 0 18c.83 0 1.5-.67 1.5-1.5 0-.39-.15-.74-.39-1-.24-.27-.39-.62-.39-1 0-.83.67-1.5 1.5-1.5H16a5 5 0 0 0 5-5c0-4.42-4.03-8-9-8zm-5.5 9c-.83 0-1.5-.67-1.5-1.5S5.67 9 6.5 9 8 9.67 8 10.5 7.33 12 6.5 12zm3-4C8.67 8 8 7.33 8 6.5S8.67 5 9.5 5s1.5.67 1.5 1.5S10.33 8 9.5 8zm5 0c-.83 0-1.5-.67-1.5-1.5S13.67 5 14.5 5s1.5.67 1.5 1.5S15.33 8 14.5 8zm3 4c-.83 0-1.5-.67-1.5-1.5S16.67 9 17.5 9s1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/>
+            </svg>
+            <h2>Appearance</h2>
+        </div>
+
+        <div class="st-row">
+            <div>
+                <span class="st-row-title">Dark mode</span>
+                <p class="st-row-desc">Switch between the light and dark paper themes.</p>
+            </div>
+            <div class="st-row-control">
+                <form action="/settings/theme" method="post">
+                    <input type="hidden" name="redirectTo" value="/settings">
+                    <label class="st-switch">
+                        <input type="checkbox" name="darkTheme" value="true"
+                               <c:if test="${sessionScope.user.darkTheme}">checked</c:if>
+                               onchange="this.form.submit()">
+                        <span class="st-switch-track"><span class="st-switch-thumb"></span></span>
+                        <span class="st-sr-only">Enable dark mode</span>
+                    </label>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <section class="st-card">
+        <div class="st-card-head">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76 0 5-2.24 5-5s-2.24-5-5-5z"/>
+            </svg>
+            <h2>Quick links</h2>
+        </div>
+        <p class="st-card-note">Jump to the parts of your journal you use most.</p>
+
+        <div class="st-tiles">
+            <a class="st-tile" href="/dashboard">
+                <span class="st-tile-icon">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M18 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 4h5v8l-2.5-1.5L6 12V4z"/>
+                    </svg>
+                </span>
+                <span class="st-tile-body">
+                    <span class="st-tile-title">Journal</span>
+                    <span class="st-tile-desc">Write today's entry</span>
+                </span>
+                <svg class="st-tile-arrow" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M8.59 16.59 13.17 12 8.59 7.41 10 6l6 6-6 6z"/>
+                </svg>
+            </a>
+
+            <a class="st-tile" href="/profile">
+                <span class="st-tile-icon">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                    </svg>
+                </span>
+                <span class="st-tile-body">
+                    <span class="st-tile-title">Profile</span>
+                    <span class="st-tile-desc">Photo, details, password</span>
+                </span>
+                <svg class="st-tile-arrow" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M8.59 16.59 13.17 12 8.59 7.41 10 6l6 6-6 6z"/>
+                </svg>
+            </a>
+        </div>
+    </section>
+
+    <section class="st-card">
+        <div class="st-card-head">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 15c-.55 0-1-.45-1-1v-4c0-.55.45-1 1-1s1 .45 1 1v4c0 .55-.45 1-1 1zm1-8h-2V7h2v2z"/>
+            </svg>
+            <h2>Account</h2>
+        </div>
+
+        <div class="st-row">
+            <div>
+                <span class="st-row-title">Delete account</span>
+                <p class="st-row-desc">Permanently remove your account and every journal entry. This cannot be undone.</p>
+            </div>
+            <div class="st-row-control">
+                <form action="/settings/delete" method="post"
+                      onsubmit="return confirm('Delete your account and all journal entries? This cannot be undone.');">
+                    <button type="submit" class="st-btn st-btn-danger">
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
+                        </svg>
+                        Delete
+                    </button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <p class="st-foot">MyStory · Version 1.0.0</p>
+
+</main>
+
+<script>
+    // Inline because this is the only script the page needs. It posts to the same
+    // endpoint the profile and dashboard pages use, so the theme stays a single
+    // server-side source of truth. On failure the class is rolled back, so the UI
+    // never claims a theme the server did not save.
+    async function toggleTheme() {
+        const isDark = !document.body.classList.contains('dark-theme');
+        document.body.classList.toggle('dark-theme', isDark);
+
+        try {
+            const body = new URLSearchParams({ darkTheme: isDark, redirectTo: '/settings' });
+            const res = await fetch('/settings/theme', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                credentials: 'include',
+                body
+            });
+            if (!res.ok) throw new Error('Request failed: ' + res.status);
+        } catch (error) {
+            console.error('Error saving theme:', error);
+            document.body.classList.toggle('dark-theme', !isDark);
+        }
+    }
+</script>
 
 </body>
 </html>

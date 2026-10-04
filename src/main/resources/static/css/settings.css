@@ -1,0 +1,620 @@
+/* ============================================================
+   Daybook — settings page styles
+   Loaded ONLY by settings.jsp. Self-contained: does not depend on
+   style.css, and nothing here leaks into the app's other pages.
+   Shares the paper-and-ink tokens with profile.css and dashboard.css
+   so the three pages read as one product.
+   ============================================================ */
+
+*,
+*::before,
+*::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    --ink: #1c1917;
+    --ink-soft: #57534e;
+    --ink-faint: #a8a29e;
+    --paper: #faf6ef;
+    --paper-2: #f3ece0;
+    --paper-edge: #e6dccb;
+    --seal: #9b2c2c;
+    --seal-soft: #c05621;
+    --field: #fffdf9;
+
+    min-height: 100vh;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'Karla', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* Paper grain, as on the landing page, dashboard, and profile */
+body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.5;
+    background-image:
+        radial-gradient(circle at 20% 30%, rgba(155, 44, 44, 0.04) 0, transparent 45%),
+        radial-gradient(circle at 80% 70%, rgba(192, 86, 33, 0.05) 0, transparent 50%),
+        repeating-linear-gradient(0deg, rgba(28, 25, 23, 0.08) 0 1px, transparent 1px 3px);
+    mix-blend-mode: multiply;
+}
+
+:focus-visible {
+    outline: 2px solid var(--seal);
+    outline-offset: 2px;
+    border-radius: 4px;
+}
+
+button {
+    font-family: inherit;
+}
+
+/* Visually hidden but available to screen readers */
+.st-sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* ---------- Top bar ---------- */
+
+.st-top {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+    padding: 1rem 1.75rem;
+    background: var(--paper);
+    border-bottom: 1px solid var(--paper-edge);
+}
+
+.st-brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.65rem;
+    text-decoration: none;
+    color: var(--ink);
+}
+
+.st-brand-logo {
+    display: block;
+    width: 38px;
+    height: 38px;
+    flex-shrink: 0;
+}
+
+.st-brand-name {
+    font-family: 'Fraunces', Georgia, 'Times New Roman', serif;
+    font-size: 1.2rem;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+}
+
+.st-top-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.st-icon-btn {
+    display: grid;
+    place-items: center;
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    border: 1px solid transparent;
+    background: transparent;
+    color: var(--ink-soft);
+    cursor: pointer;
+    text-decoration: none;
+    transition: background 0.18s ease, color 0.18s ease, border-color 0.18s ease;
+}
+
+.st-icon-btn svg {
+    width: 20px;
+    height: 20px;
+    fill: currentColor;
+}
+
+.st-icon-btn:hover {
+    background: var(--paper-2);
+    border-color: var(--paper-edge);
+    color: var(--ink);
+}
+
+/* The toggle shows the icon of the theme you would switch *to* */
+.st-theme-toggle .moon-icon {
+    display: none;
+}
+
+body.dark-theme .st-theme-toggle .moon-icon {
+    display: block;
+}
+
+body.dark-theme .st-theme-toggle .sun-icon {
+    display: none;
+}
+
+.st-icon-btn.is-active {
+    background: var(--paper-2);
+    border-color: var(--paper-edge);
+    color: var(--ink);
+}
+
+.st-logout {
+    margin-left: 0.35rem;
+    padding: 0.55rem 1.05rem;
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--paper);
+    background: var(--ink);
+    border-radius: 10px;
+    text-decoration: none;
+    transition: background 0.18s ease, transform 0.18s ease;
+}
+
+.st-logout:hover {
+    background: #292524;
+    transform: translateY(-1px);
+}
+
+/* ---------- Layout ---------- */
+
+.st-wrap {
+    position: relative;
+    z-index: 1;
+    max-width: 940px;
+    margin: 0 auto;
+    padding: 2.5rem 1.75rem 5rem;
+}
+
+.st-head {
+    margin-bottom: 2rem;
+}
+
+.st-eyebrow {
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--seal);
+    margin-bottom: 0.6rem;
+}
+
+.st-title {
+    font-family: 'Fraunces', Georgia, 'Times New Roman', serif;
+    font-size: clamp(1.9rem, 4vw, 2.6rem);
+    font-weight: 600;
+    line-height: 1.1;
+    letter-spacing: -0.025em;
+    margin-bottom: 0.5rem;
+}
+
+.st-lede {
+    font-size: 1rem;
+    color: var(--ink-soft);
+}
+
+/* ---------- Alerts ---------- */
+
+.st-alert {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.6rem;
+    margin-bottom: 1.5rem;
+    padding: 0.8rem 1rem;
+    font-size: 0.92rem;
+    border-radius: 12px;
+    border: 1px solid;
+}
+
+.st-alert svg {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+    margin-top: 1px;
+    fill: currentColor;
+}
+
+.st-alert-success {
+    color: #1e6b3a;
+    background: rgba(30, 107, 58, 0.07);
+    border-color: rgba(30, 107, 58, 0.25);
+}
+
+.st-alert-error {
+    color: #7f1d1d;
+    background: rgba(155, 44, 44, 0.07);
+    border-color: rgba(155, 44, 44, 0.28);
+}
+
+/* ---------- Cards ---------- */
+
+.st-card {
+    margin-bottom: 1.5rem;
+    padding: 1.5rem 1.65rem;
+    background: var(--field);
+    border: 1px solid var(--paper-edge);
+    border-radius: 6px 22px 6px 22px;
+    box-shadow: 0 1px 2px rgba(28, 25, 23, 0.05);
+}
+
+.st-card-head {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin-bottom: 0.35rem;
+}
+
+.st-card-head svg {
+    width: 19px;
+    height: 19px;
+    flex-shrink: 0;
+    fill: var(--seal);
+}
+
+.st-card-head h2 {
+    font-family: 'Fraunces', Georgia, 'Times New Roman', serif;
+    font-size: 1.15rem;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    color: var(--ink);
+}
+
+.st-card-note {
+    margin-bottom: 0.5rem;
+    font-size: 0.88rem;
+    color: var(--ink-soft);
+}
+
+/* ---------- Rows ---------- */
+
+.st-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+    padding: 1.1rem 0;
+    border-bottom: 1px solid var(--paper-edge);
+}
+
+.st-card-note + .st-row,
+.st-card-head + .st-row {
+    margin-top: 0.35rem;
+}
+
+.st-row:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.st-row-title {
+    display: block;
+    margin-bottom: 0.2rem;
+    font-size: 0.98rem;
+    font-weight: 600;
+    color: var(--ink);
+}
+
+.st-row-desc {
+    font-size: 0.87rem;
+    color: var(--ink-soft);
+}
+
+.st-row-control {
+    flex-shrink: 0;
+}
+
+/* ---------- Toggle switch ---------- */
+
+.st-switch {
+    position: relative;
+    display: inline-block;
+    width: 52px;
+    height: 28px;
+    cursor: pointer;
+}
+
+.st-switch input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.st-switch-track {
+    position: absolute;
+    inset: 0;
+    background: var(--paper-edge);
+    border-radius: 999px;
+    transition: background 0.22s ease;
+}
+
+.st-switch-thumb {
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 22px;
+    height: 22px;
+    background: var(--field);
+    border-radius: 50%;
+    box-shadow: 0 1px 3px rgba(28, 25, 23, 0.3);
+    transition: transform 0.22s ease;
+}
+
+.st-switch input:checked + .st-switch-track {
+    background: var(--seal);
+}
+
+.st-switch input:checked + .st-switch-track .st-switch-thumb {
+    transform: translateX(24px);
+}
+
+.st-switch input:focus-visible + .st-switch-track {
+    outline: 2px solid var(--seal);
+    outline-offset: 2px;
+}
+
+/* ---------- Quick link tiles ---------- */
+
+.st-tiles {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 0.85rem;
+    margin-top: 1rem;
+}
+
+.st-tile {
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+    padding: 1rem 1.1rem;
+    text-decoration: none;
+    color: var(--ink);
+    background: var(--paper-2);
+    border: 1px solid var(--paper-edge);
+    border-radius: 12px;
+    transition: border-color 0.18s ease, background 0.18s ease, transform 0.18s ease;
+}
+
+.st-tile:hover {
+    background: var(--field);
+    border-color: var(--ink-faint);
+    transform: translateY(-2px);
+}
+
+.st-tile-icon {
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    flex-shrink: 0;
+    border-radius: 10px;
+    color: var(--paper);
+    background: var(--ink);
+}
+
+.st-tile-icon svg {
+    width: 20px;
+    height: 20px;
+    fill: currentColor;
+}
+
+.st-tile-body {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.st-tile-title {
+    font-size: 0.95rem;
+    font-weight: 600;
+}
+
+.st-tile-desc {
+    font-size: 0.83rem;
+    color: var(--ink-soft);
+}
+
+.st-tile-arrow {
+    width: 18px;
+    height: 18px;
+    margin-left: auto;
+    flex-shrink: 0;
+    fill: var(--ink-faint);
+    transition: transform 0.18s ease;
+}
+
+.st-tile:hover .st-tile-arrow {
+    transform: translateX(3px);
+    fill: var(--ink);
+}
+
+/* ---------- Buttons ---------- */
+
+.st-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.68rem 1.2rem;
+    font-family: inherit;
+    font-size: 0.9rem;
+    font-weight: 600;
+    border: 1px solid transparent;
+    border-radius: 10px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background 0.18s ease, transform 0.18s ease, border-color 0.18s ease;
+}
+
+.st-btn svg {
+    width: 17px;
+    height: 17px;
+    fill: currentColor;
+}
+
+.st-btn-primary {
+    color: var(--paper);
+    background: var(--ink);
+}
+
+.st-btn-primary:hover {
+    background: #292524;
+    transform: translateY(-1px);
+}
+
+.st-btn-danger {
+    color: #fff;
+    background: var(--seal);
+}
+
+.st-btn-danger:hover {
+    background: #7f1d1d;
+    transform: translateY(-1px);
+}
+
+/* ---------- Footer ---------- */
+
+.st-foot {
+    margin-top: 2rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--paper-edge);
+    font-size: 0.83rem;
+    color: var(--ink-faint);
+    text-align: center;
+}
+
+/* ---------- Responsive ---------- */
+
+@media (max-width: 720px) {
+    .st-top {
+        padding: 0.85rem 1.1rem;
+    }
+
+    .st-brand-name {
+        display: none;
+    }
+
+    .st-wrap {
+        padding: 1.85rem 1.1rem 4rem;
+    }
+
+    .st-card {
+        padding: 1.25rem 1.15rem;
+    }
+
+    .st-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.85rem;
+    }
+
+    .st-row-control {
+        width: 100%;
+    }
+
+    .st-tiles {
+        grid-template-columns: 1fr;
+    }
+
+    .st-btn-danger {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        transition: none !important;
+        animation: none !important;
+    }
+
+    .st-logout:hover,
+    .st-tile:hover,
+    .st-btn-primary:hover,
+    .st-btn-danger:hover {
+        transform: none;
+    }
+}
+
+/* ---------- Dark theme (matches the app-wide toggle) ---------- */
+
+body.dark-theme {
+    --ink: #f5f1e8;
+    --ink-soft: #b8b0a4;
+    --ink-faint: #8b8377;
+    --paper: #1c1917;
+    --paper-2: #292524;
+    --paper-edge: #3a342f;
+    --field: #232020;
+
+    background: var(--paper);
+    color: var(--ink);
+}
+
+body.dark-theme::before {
+    mix-blend-mode: screen;
+    opacity: 0.25;
+}
+
+body.dark-theme .st-title,
+body.dark-theme .st-card-head h2,
+body.dark-theme .st-row-title {
+    color: var(--ink);
+}
+
+body.dark-theme .st-logout,
+body.dark-theme .st-tile-icon,
+body.dark-theme .st-btn-primary {
+    color: var(--paper);
+    background: var(--ink);
+}
+
+body.dark-theme .st-logout:hover,
+body.dark-theme .st-btn-primary:hover {
+    background: #f5f1e8;
+    color: #1c1917;
+}
+
+body.dark-theme .st-tile {
+    background: var(--paper-2);
+}
+
+body.dark-theme .st-tile:hover {
+    background: var(--field);
+}
+
+body.dark-theme .st-switch input:checked + .st-switch-track {
+    background: var(--seal-soft);
+}
+
+body.dark-theme .st-alert-success {
+    color: #86efac;
+    background: rgba(134, 239, 172, 0.09);
+    border-color: rgba(134, 239, 172, 0.25);
+}
+
+body.dark-theme .st-alert-error {
+    color: #fca5a5;
+    background: rgba(252, 165, 165, 0.1);
+    border-color: rgba(252, 165, 165, 0.28);
+}
