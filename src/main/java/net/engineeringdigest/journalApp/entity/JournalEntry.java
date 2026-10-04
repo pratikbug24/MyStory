@@ -1,5 +1,7 @@
 package net.engineeringdigest.journalApp.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
@@ -15,6 +17,7 @@ public class JournalEntry {
     private LocalDateTime date;
 
     @ManyToOne
+    @JsonIgnore
     private User user;
 
     public JournalEntry() {}
