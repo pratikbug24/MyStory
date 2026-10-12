@@ -176,6 +176,17 @@ docker run -d --name mystory -p 8081:8081 \
 Then open http://localhost:8081. (If the package is private, run
 `docker login ghcr.io` first.)
 
+Deploy a permanent public link
+
+To get a stable URL anyone can open in a browser, deploy the container to a host
+that runs 24/7. One-click with Render (free tier):
+
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/pratikbug24/MyStory)
+
+This uses `render.yaml`, which builds the `Dockerfile`, generates a `JWT_SECRET`,
+and attaches a persistent disk at `/app/data` so the SQLite database survives
+restarts. Render gives you a permanent `https://<name>.onrender.com` address.
+
 Build the image:
 ```
 docker build -t mystory:latest .
