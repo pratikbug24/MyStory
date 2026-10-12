@@ -5,6 +5,11 @@
 
 	<modelVersion>4.0.0</modelVersion>
 
+	<!-- JSPs are only served from a WAR; Spring Boot excludes src/main/webapp
+	     from an executable jar, which makes every view-mapped route 404. The
+	     packaged WAR is still runnable with `java -jar`. -->
+	<packaging>war</packaging>
+
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
@@ -27,6 +32,15 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
+
+		<!-- Provided so the embedded Tomcat ships in WEB-INF/lib-provided and the
+		     executable WAR still runs standalone, while an external container
+		     (e.g. Tomcat) supplies its own copy. -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-tomcat</artifactId>
+			<scope>provided</scope>
 		</dependency>
 
 		<!-- Spring Data JPA -->
@@ -79,6 +93,7 @@
 		<dependency>
 			<groupId>org.apache.tomcat.embed</groupId>
 			<artifactId>tomcat-embed-jasper</artifactId>
+			<scope>provided</scope>
 		</dependency>
 
 		<dependency>

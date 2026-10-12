@@ -1,0 +1,19 @@
+# Build output and VCS metadata
+target/
+.git/
+.gitignore
+
+# Local runtime state (must not be baked into the image)
+journal.db
+uploads/
+
+# Docs and assets not needed to build the app
+README.md
+images/
+frantend/
+
+# IDE / OS noise
+.idea/
+.vscode/
+*.iml
+*.log
