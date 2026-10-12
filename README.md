@@ -1,6 +1,6 @@
-📓 MyStory (Spring Boot + JSP + MySQL)
+📓 MyStory (Spring Boot + JSP + SQLite)
 
-A full-stack Journal Management Application built using Spring Boot, JSP, and MySQL.
+A full-stack Journal Management Application built using Spring Boot, JSP, and SQLite.
 Users can register, log in, and manage their personal journal entries.
 
 ------------
@@ -13,7 +13,7 @@ Users can register, log in, and manage their personal journal entries.
 
 🔗 REST API + JSP-based UI
 
-💾 MySQL database integration (via JPA/Hibernate)
+💾 SQLite database integration (via JPA/Hibernate)
 
 🎨 Clean frontend using HTML, CSS, and JavaScript
 
@@ -39,7 +39,7 @@ Frontend
 
 Database
 
-- MySQL (phpMyAdmin)
+- SQLite (file-based, no server)
 ---------
 
 
@@ -124,24 +124,24 @@ credentials, so `WebConfig` enables credentialed CORS for the local dev origins.
 
 1️⃣ Clone Repository
 ```
-git clone https://github.com/your-username/journalApp.git
-cd journalApp
+git clone https://github.com/pratikbug24/MyStory.git
+cd MyStory
 ```
 ---------
 2️⃣ Configure Database
 
-Open phpMyAdmin and create a database:
-```
-CREATE DATABASE journaldb;
-```
-------
-3️⃣ Update application.properties
-spring.datasource.url=jdbc:mysql://localhost:3306/journaldb
-spring.datasource.username=root
-spring.datasource.password=
+No database server is required — the app uses an embedded SQLite file. The
+database (`journal.db`) and uploads (`uploads/`) are created automatically on
+first run, so there is nothing to configure.
 
-spring.jpa.hibernate.ddl-auto=update
-spring.jpa.show-sql=true
+------
+3️⃣ Update application.properties (optional)
+
+Defaults live in `src/main/resources/application.properties`. Override the JWT
+secret in production, for example:
+```
+jwt.secret=${JWT_SECRET:dev-only-secret-change-me-8f2b1c4d9e6a7b3f5c0d2e4a6b8c1d3f}
+```
 
 4️⃣ Build Project
 ```
@@ -153,8 +153,76 @@ mvn spring-boot:run
 ```
 OR
 ```
-java -jar target/journalApp-0.0.1-SNAPSHOT.jar
+java -jar target/journalApp-0.0.1-SNAPSHOT.war
 ```
+--------
+
+Docker
+------
+The app is packaged as an executable WAR (JSP requires WAR packaging) and ships
+with a multi-stage `Dockerfile` and a `docker-compose.yml`.
+
+Run without cloning (prebuilt image)
+
+Every push to `main` publishes the image to GitHub Container Registry, so anyone
+can pull and run it directly:
+```
+docker run -d --name mystory -p 8081:8081 \
+  -e JWT_SECRET=replace-with-a-long-random-string \
+  -v mystory-data:/app/data \
+  -v mystory-uploads:/app/uploads \
+  ghcr.io/pratikbug24/mystory:latest
+```
+Then open http://localhost:8081. (If the package is private, run
+`docker login ghcr.io` first.)
+
+Build the image:
+```
+docker build -t mystory:latest .
+```
+
+Run with Compose (recommended). Provide the JWT secret via a `.env` file next to
+`docker-compose.yml` (Compose reads it automatically, on every OS):
+```
+# .env
+JWT_SECRET=replace-with-a-long-random-string
+```
+```
+docker compose up -d --build
+```
+The app is then available on http://localhost:8081. The SQLite database and
+uploaded photos persist in the `mystory-data` and `mystory-uploads` volumes.
+
+Setting the secret inline differs per shell:
+```
+# bash / zsh
+JWT_SECRET="$(openssl rand -hex 32)" docker compose up -d --build
+
+# Windows PowerShell
+$env:JWT_SECRET = openssl rand -hex 32
+docker compose up -d --build
+
+# Windows cmd.exe
+set JWT_SECRET=replace-with-a-long-random-string
+docker compose up -d --build
+```
+
+Run with plain Docker:
+```
+docker run -d --name mystory -p 8081:8081 \
+  -e JWT_SECRET=replace-with-a-long-random-string \
+  -v mystory-data:/app/data \
+  -v mystory-uploads:/app/uploads \
+  mystory:latest
+```
+
+Notes:
+- The container listens on 8081. The SQLite file lives at `/app/data/journal.db`
+  and uploads at `/app/uploads`; mount both so they survive restarts.
+- Set `JWT_SECRET` to a strong random value, and `JWT_COOKIE_SECURE=true` when
+  serving over HTTPS.
+- Health check endpoint: `GET /health_check`.
+
 --------
 
 🧠 How It Works
